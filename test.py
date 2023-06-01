@@ -52,17 +52,17 @@ if __name__ == "__main__":
 
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     train_loader,test_loader = loader(batch_size,num_workers,shuffle=True)
-
+    
     model0 = UNET_TR(n_classes).to(device)
-    model3 = TranswaveUNET_c(n_classes).to(device)   #2.27    3.07
-    model1 = TransUNet_copy(img_dim=128,in_channels=3,out_channels=128,head_num=4,mlp_dim=512,block_num=8,encoder_scale=16,class_num=1).to(device) #1.5  5.3
-    model2 = TransUNET_c(n_classes).to(device)       #2.22    8.64
+    model1 = TranswaveUNET_c(n_classes).to(device)   #2.27    3.07
+    model2 = TransUNet_copy(img_dim=128,in_channels=3,out_channels=128,head_num=4,mlp_dim=512,block_num=8,encoder_scale=16,class_num=1).to(device) #1.5  5.3
+    model3 = TransUNET_c(n_classes).to(device)       #2.22    8.64
     model4 = UNET(n_classes).to(device)             #1.38      4.47
 
     all_models=[model0,model1,model2,model3,model4]
 
     for idx,model in enumerate(all_models):
-        if idx == 4:
+        if idx == 3:
 
             model.eval()
             print(f"Testing for Model{idx} = {model.__class__.__name__}")
@@ -89,11 +89,9 @@ if __name__ == "__main__":
                         prediction = torch.argmax(prediction,dim=2)    #for multiclass_segmentation
 
                     else:
-                        
 
                         score = calculate_metrics(labels, prediction)
                         metrics_score = list(map(add, metrics_score, score))
-
 
                 jaccard     = metrics_score[0]/len(test_loader)
                 f1          = metrics_score[1]/len(test_loader)
