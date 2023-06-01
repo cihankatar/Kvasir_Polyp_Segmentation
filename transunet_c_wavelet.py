@@ -160,52 +160,52 @@ class TranswaveUNET_c(nn.Module):
 
         outputs = self.outputs(d4)                             # 2x 1   x 128x128
         
-        # image =inputs[1,1]
+        image =inputs[1,1]
         
-        # enc1  = s0[1,1]
-        # enc2  = coef1[1,1]
-        # enc3  = coef2[1,1]
-        # enc4  = coef3[1,1]
+        enc1  = s0[1,1]
+        enc2  = dwt1[1,1]
+        enc3  = dwt2[1,1]
+        enc4  = dwt3[1,1]
 
-        # vit  = x[1,1]
-        # bottle  = x1[1,1]
+        vit  = x[1,1]
+        bottle  = x1[1,1]
 
-        # dec1  = idwt1[1,1]
-        # dec2  = idwt2[1,1]
-        # dec3  = idwt3[1,1]
-        # dec4  = d4[1,1]
+        dec1  = idwt1[1,1]
+        dec2  = idwt2[1,1]
+        dec3  = idwt3[1,1]
+        dec4  = d4[1,1]
 
-        # output  = outputs[1,0]
-        # output    = output > 0.5
-        # output    = np.array(output, dtype=np.uint8)
+        output  = outputs[1,0]
+        output    = output > 0.5
+        output    = np.array(output, dtype=np.uint8)
 
-        # plt.figure()
-        # plt.subplot(3, 5, 1)
-        # plt.imshow(image.detach().numpy(),cmap='gray')
-        # plt.subplot(3, 5, 2)
-        # plt.imshow(enc1.detach().numpy(),cmap='gray')
-        # plt.subplot(3, 5, 3)
-        # plt.imshow(enc2.detach().numpy(),cmap='gray')
-        # plt.subplot(3, 5, 4)
-        # plt.imshow(enc3.detach().numpy(),cmap='gray')
-        # plt.subplot(3, 5, 5)
-        # plt.imshow(enc4.detach().numpy(),cmap='gray')
+        plt.figure()
+        plt.subplot(3, 5, 1)
+        plt.imshow(image.detach().numpy(),cmap='gray')
+        plt.subplot(3, 5, 2)
+        plt.imshow(enc1.detach().numpy(),cmap='gray')
+        plt.subplot(3, 5, 3)
+        plt.imshow(enc2.detach().numpy(),cmap='gray')
+        plt.subplot(3, 5, 4)
+        plt.imshow(enc3.detach().numpy(),cmap='gray')
+        plt.subplot(3, 5, 5)
+        plt.imshow(enc4.detach().numpy(),cmap='gray')
 
-        # plt.subplot(3, 5, 6)
-        # plt.imshow(vit.detach().numpy(),cmap='gray')
-        # plt.subplot(3, 5, 7)
-        # plt.imshow(bottle.detach().numpy(),cmap='gray')
+        plt.subplot(3, 5, 6)
+        plt.imshow(vit.detach().numpy(),cmap='gray')
+        plt.subplot(3, 5, 7)
+        plt.imshow(bottle.detach().numpy(),cmap='gray')
 
-        # plt.subplot(3, 5, 11)
-        # plt.imshow(dec1.detach().numpy(),cmap='gray')
-        # plt.subplot(3, 5, 12)
-        # plt.imshow(dec2.detach().numpy(),cmap='gray')
-        # plt.subplot(3, 5, 13)
-        # plt.imshow(dec3.detach().numpy(),cmap='gray')
-        # plt.subplot(3, 5, 14)
-        # plt.imshow(dec4.detach().numpy(),cmap='gray')
-        # plt.subplot(3, 5, 15)
-        # plt.imshow(output,cmap='gray')
+        plt.subplot(3, 5, 11)
+        plt.imshow(dec1.detach().numpy(),cmap='gray')
+        plt.subplot(3, 5, 12)
+        plt.imshow(dec2.detach().numpy(),cmap='gray')
+        plt.subplot(3, 5, 13)
+        plt.imshow(dec3.detach().numpy(),cmap='gray')
+        plt.subplot(3, 5, 14)
+        plt.imshow(dec4.detach().numpy(),cmap='gray')
+        plt.subplot(3, 5, 15)
+        plt.imshow(output,cmap='gray')
         
         return outputs
 
