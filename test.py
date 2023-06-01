@@ -11,6 +11,7 @@ from Unet import UNET
 from transunet import TransUNet_copy
 from transunet_c import TransUNET_c
 from transunet_c_wavelet import TranswaveUNET_c
+from UNETR import UNET_TR
 
 def calculate_metrics(y_true, y_pred):
 
@@ -50,57 +51,57 @@ if __name__ == "__main__":
     num_workers = 2
 
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    #model = TransUNet_copy(img_dim=128,
-    #                      in_channels=3,
-    #                      out_channels=128,
-    #                      head_num=4,
-    #                      mlp_dim=512,
-    #                      block_num=8,
-    #                      encoder_scale=16,
-    #                     class_num=1).to(device)
-    
-       
-    model = TransUNET_c(n_classes).to(device)
-    
-    #model = TranswaveUNET_c(n_classes).to(device)
-
-    if torch.cuda.is_available():
-        model.load_state_dict(torch.load(checkpoint_path))
-    else: 
-        model.load_state_dict(torch.load(checkpoint_path, map_location=torch.device('cpu')))
-
-    model.eval()
-    metrics_score = [0.0, 0.0, 0.0, 0.0, 0.0]
-
-    
     train_loader,test_loader = loader(batch_size,num_workers,shuffle=True)
 
-    for batch in tqdm(test_loader, desc=f"testing ", leave=False):
-        images,labels   = batch                
-        model_output    = model(images)
+    model0 = UNET_TR(n_classes).to(device)
+    model3 = TranswaveUNET_c(n_classes).to(device)   #2.27    3.07
+    model1 = TransUNet_copy(img_dim=128,in_channels=3,out_channels=128,head_num=4,mlp_dim=512,block_num=8,encoder_scale=16,class_num=1).to(device) #1.5  5.3
+    model2 = TransUNET_c(n_classes).to(device)       #2.22    8.64
+    model4 = UNET(n_classes).to(device)             #1.38      4.47
 
-        with torch.no_grad():
+    all_models=[model0,model1,model2,model3,model4]
 
-            model_output    = model(images)
-            prediction = torch.sigmoid(model_output)
+    for idx,model in enumerate(all_models):
+        if idx == 4:
 
-            if n_classes>1:
-                prediction = torch.argmax(prediction,dim=2)    #for multiclass_segmentation
+            model.eval()
+            print(f"Testing for Model{idx} = {model.__class__.__name__}")
+            #checkpoint_path = "modelsave/checkpoint_model_"+str(model.__class__.__name__)
+            checkpoint_path = "modelsave/checkpoint_model"+str(idx)
 
-            else:
-                
+            if torch.cuda.is_available():
+                model.load_state_dict(torch.load(checkpoint_path))
+            else: 
+                model.load_state_dict(torch.load(checkpoint_path, map_location=torch.device('cpu')))
 
-                score = calculate_metrics(labels, prediction)
-                metrics_score = list(map(add, metrics_score, score))
+            metrics_score = [0.0, 0.0, 0.0, 0.0, 0.0]
+
+            for batch in tqdm(test_loader, desc=f"testing ", leave=False):
+                images,labels   = batch                
+                model_output    = model(images)
+
+                with torch.no_grad():
+
+                    model_output    = model(images)
+                    prediction = torch.sigmoid(model_output)
+
+                    if n_classes>1:
+                        prediction = torch.argmax(prediction,dim=2)    #for multiclass_segmentation
+
+                    else:
+                        
+
+                        score = calculate_metrics(labels, prediction)
+                        metrics_score = list(map(add, metrics_score, score))
 
 
-        jaccard     = metrics_score[0]/len(test_loader)
-        f1          = metrics_score[1]/len(test_loader)
-        recall      = metrics_score[2]/len(test_loader)
-        precision   = metrics_score[3]/len(test_loader)
-        acc         = metrics_score[4]/len(test_loader)
-        print(f"Jaccard: {jaccard:1.4f} - F1: {f1:1.4f} - Recall: {recall:1.4f} - Precision: {precision:1.4f} - Acc: {acc:1.4f}")
-        print(len(test_loader))
+                jaccard     = metrics_score[0]/len(test_loader)
+                f1          = metrics_score[1]/len(test_loader)
+                recall      = metrics_score[2]/len(test_loader)
+                precision   = metrics_score[3]/len(test_loader)
+                acc         = metrics_score[4]/len(test_loader)
+                print(f"Jaccard: {jaccard:1.4f} - F1: {f1:1.4f} - Recall: {recall:1.4f} - Precision: {precision:1.4f} - Acc: {acc:1.4f}")
+                print(len(test_loader))
 
 
 '''
